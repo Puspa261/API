@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tasks;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class TasksController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,17 +15,17 @@ class TasksController extends Controller
     {
         try {
             $perpage = $request->get('per_page', 10);
-            $tasks = Tasks::with('user')->paginate($perpage);
+            $users = User::paginate($perpage);
 
             return response()->json([
                 'succes' => true,
                 'message' => 'Data Fetch Successfully',
-                'data' => $tasks->items(),
+                'data' => $users->items(),
                 'pagination' => [
-                    'current_page' => $tasks->currentPage(),
-                    'per_page' => $tasks->perPage(),
-                    'total_page' => $tasks->lastPage(),
-                    'total_items' => $tasks->total()
+                    'current_page' => $users->currentPage(),
+                    'per_page' => $users->perPage(),
+                    'total_page' => $users->lastPage(),
+                    'total_items' => $users->total()
                 ]
             ], status: 200);
         } catch (\Exception $e) {
@@ -52,8 +52,9 @@ class TasksController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'id_user' => 'required|exists:users,id', // relasi user
-                'title' => 'required',
+                'username' => 'required',
+                'email' => 'required',
+                'password' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -64,10 +65,10 @@ class TasksController extends Controller
                 ], status: 403);
             }
 
-            Tasks::create($request->all());
+            User::create($request->all());
             return response()->json([
                 'success' => true,
-                'message' => 'Task Created Successfully',
+                'message' => 'User Created Successfully',
                 'data' => null
             ]);
         } catch (\Exception $e) {
@@ -85,12 +86,12 @@ class TasksController extends Controller
     public function show($id)
     {
         try {
-            $tasks = Tasks::with('user')->findOrFail($id);
+            $users = User::findOrFail($id);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Fetch task by id successfully',
-                'data' => $tasks
+                'data' => $users
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -104,7 +105,7 @@ class TasksController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Tasks $tasks)
+    public function edit(User $user)
     {
         //
     }
@@ -115,11 +116,12 @@ class TasksController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $tasks = Tasks::findOrFail($id);
+            $users = User::findOrFail($id);
 
             $validator = Validator::make($request->all(), [
-                'id_user' => 'required',
-                'title' => 'required',
+                'username' => 'required',
+                'email' => 'required',
+                'password' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -130,10 +132,10 @@ class TasksController extends Controller
                 ], status: 403);
             }
 
-            $tasks->update($request->all());
+            $users->update($request->all());
             return response()->json([
                 'success' => true,
-                'message' => 'Task Updated Successfully',
+                'message' => 'User Updated Successfully',
                 'data' => null
             ]);
         } catch (\Exception $e) {
@@ -151,12 +153,12 @@ class TasksController extends Controller
     public function destroy($id)
     {
         try {
-            $tasks = Tasks::findOrFail($id);
+            $users = User::findOrFail($id);
 
-            $tasks->delete();
+            $users->delete();
             return response()->json([
                 'success' => true,
-                'message' => 'Task Deleted Successfully',
+                'message' => 'User Deleted Successfully',
                 'data' => null
             ]);
         } catch (\Exception $e) {

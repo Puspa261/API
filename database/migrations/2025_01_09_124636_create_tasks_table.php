@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('tasks', callback: function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('id_user');
             $table->string('title');
             $table->text('description');
             $table->enum('status', ['pending', 'in_progress', 'completed'])->default('pending');
